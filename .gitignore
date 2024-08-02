@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 # song_lyrics.csv 
-song_lyrics.csv
+*.csv
 intervals.pdf
 
 # Distribution / packaging
