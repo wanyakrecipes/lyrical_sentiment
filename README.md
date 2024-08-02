@@ -1,4 +1,4 @@
-# lyrical_sentiment
+# Models and Lyrics
 
 This repo contains work on exploring lyrics with natural language process techniques. The repo will contain work in two areas:
 
