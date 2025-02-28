@@ -5,6 +5,8 @@ This repo contains work on exploring lyrics with natural language process techni
 1. Use text classification methods to examine lyric sentiment for songs in English.
 2. Train a large language model (LLM) to generate lyrics in English.
 
+The project will be using the [Genius Song Lyric](https://www.kaggle.com/datasets/carlosgdcj/genius-song-lyrics-with-language-information/data?select=song_lyrics.csv) dataset from Kaggle.
+
 ## TODO
 
 ### Housekeeping
