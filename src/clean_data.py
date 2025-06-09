@@ -6,7 +6,7 @@ import re
 
 print("Read data...")
 
-file_path = '../data/song_lyrics.csv'
+file_path = '../data/raw/song_lyrics.csv'
 
 chunk_size = 100000
 
@@ -82,6 +82,6 @@ song_lyrics_clean_df = song_lyrics_clean_df.drop(columns=['id','language_cld3','
 #Other considerations - the word remix etc.
 
 # save to csv
-song_lyrics_clean_df.to_csv("../data/song_lyrics_clean_df.csv")
+song_lyrics_clean_df.to_csv("../data/processed/song_lyrics_clean_df.csv")
 
 
