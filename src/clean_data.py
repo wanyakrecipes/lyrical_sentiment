@@ -6,7 +6,7 @@ import re
 
 print("Read data...")
 
-file_path = 'song_lyrics.csv'
+file_path = '../data/song_lyrics.csv'
 
 chunk_size = 100000
 
@@ -20,12 +20,12 @@ for chunk in pd.read_csv(file_path, chunksize=chunk_size):
 print("Concact chunks into data frame...")
 song_lyrics_full_df = pd.concat(chunks, ignore_index=True)
 
-#Data Preprocessing
+#Data Preprocessing using EDA analysis.
 
 #Clean text
 def clean_lyrics(text):
     
-    #Remove text between brackets
+    #Remove text between brackets - this contains META information on verse and chorus - maybe do this seperately.
     text = re.sub(r'\[.*?\]', '', text)
     
     # Remove newline and tab characters
@@ -41,6 +41,9 @@ def clean_lyrics(text):
     text = text.lower()
     
     return text
+
+#TODO - have lyrics by section, then in totality.
+#Enable chorus sentiment v song sentiment over time.
 
 #Undertake data cleaning
 print("Prepare data frame for data cleaning...")
@@ -79,6 +82,6 @@ song_lyrics_clean_df = song_lyrics_clean_df.drop(columns=['id','language_cld3','
 #Other considerations - the word remix etc.
 
 # save to csv
-song_lyrics_clean_df.to_csv("song_lyrics_clean_df.csv")
+song_lyrics_clean_df.to_csv("../data/song_lyrics_clean_df.csv")
 
 
