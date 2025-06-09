@@ -14,7 +14,7 @@ device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 print(f"Using device: {device}")
 
 #Read clean dataset
-file_path = '../data/song_lyrics_clean_df.csv'
+file_path = '../data/processed/song_lyrics_clean_df.csv'
 
 chunk_size = 100000
 
