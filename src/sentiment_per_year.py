@@ -3,6 +3,7 @@ import torch
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import roberta_model as roberta
 
 #Added to ensure that it uses the apple M1 cores.
 #https://github.com/jeffheaton/app_deep_learning/blob/main/install/pytorch-install-aug-2023.ipynb
@@ -28,6 +29,8 @@ for chunk in pd.read_csv(file_path, chunksize=chunk_size):
 print("Concact chunks into data frame...")
 song_lyrics_clean_df = pd.concat(chunks, ignore_index=True)
 
+#song_lyrics_clean_df = song_lyrics_clean_df.head(100) #for tetsing.
+
 print("Generate sample...")
 
 #Generate sample of lyrics - only
@@ -40,56 +43,12 @@ song_lyrics_clean_sample_df = song_lyrics_clean_sample_df[(song_lyrics_clean_sam
 song_lyrics_clean_sample_df= song_lyrics_clean_sample_df.groupby('year').apply(lambda x: x.sample(n=100, random_state=42) if len(x) > 100 else x)
 song_lyrics_clean_sample_df = song_lyrics_clean_sample_df.reset_index(drop=True)
 
-#Function for chunking text in case lyrics are longer than 512 tokens
-def chunk_text(text, tokenizer, max_tokens=512):
-    tokens = tokenizer.tokenize(text)
-    chunks = []
-    for i in range(0, len(tokens), max_tokens):
-        token_chunk = tokens[i:i + max_tokens]
-        text_chunk = tokenizer.convert_tokens_to_string(token_chunk)
-        chunks.append(text_chunk)
-    return chunks
-
 # Load model and tokenizer once
 print("Load BERT model...")
-
-MODEL = "cardiffnlp/twitter-roberta-base-sentiment"
-tokenizer = AutoTokenizer.from_pretrained(MODEL)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL).to(device)
-labels = ['negative', 'neutral', 'positive']
-
-#Function to classify lyrics
-def classify_sentiment(text):
-    
-    inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512, padding=True)
-    inputs = {k: v.to(device) for k, v in inputs.items()}
-
-    with torch.no_grad():
-        outputs = model(**inputs)
-    
-    probs = torch.nn.functional.softmax(outputs.logits, dim=-1)[0].cpu().numpy()  # move to CPU for NumPy
-    return dict(zip(labels, map(float, probs)))
-
-
-def sentiment_over_chunks(lyrics):
-    
-    chunks = chunk_text(lyrics, tokenizer, max_tokens=512)
-    
-    all_scores = [classify_sentiment(chunk) for chunk in chunks]
-    
-    # Aggregate: average scores per label
-    avg_scores = {label: np.mean([score[label] for score in all_scores]) for label in labels}
-    
-    # Add label with highest average score
-    top_label = max(avg_scores, key=avg_scores.get)
-    
-    return {
-        'label': top_label,
-        'scores': avg_scores
-    }
+tokenizer, model, labels = roberta.load_trbs_model(device = device)
 
 print("Apply senitment over chunks...")
-song_lyrics_clean_sample_df['sentiment'] = song_lyrics_clean_sample_df['lyrics'].apply(sentiment_over_chunks)
+song_lyrics_clean_sample_df['sentiment'] = song_lyrics_clean_sample_df.apply(lambda row: roberta.sentiment_over_chunks(lyrics = row['lyrics'],tokenizer=tokenizer,labels = labels, model = model, device= device), axis=1)
 
 print("Extract sentiment labels into new columns...")
 song_lyrics_clean_sample_df['sentiment_label'] = song_lyrics_clean_sample_df['sentiment'].apply(lambda x: x['label'])
