@@ -58,3 +58,4 @@ song_lyrics_clean_sample_df['sentiment_neutral'] = song_lyrics_clean_sample_df['
 
 #generate graph of sentiment over time
 positive_sentiment_per_year_df = song_lyrics_clean_sample_df.groupby('year')['sentiment_positive'].mean().plot(title="Average Positive Sentiment Over Time")
+
