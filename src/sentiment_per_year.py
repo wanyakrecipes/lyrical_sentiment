@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import roberta_model as roberta
+import trbs_model as trbs
 
 #Added to ensure that it uses the apple M1 cores.
 #https://github.com/jeffheaton/app_deep_learning/blob/main/install/pytorch-install-aug-2023.ipynb
@@ -44,11 +44,11 @@ song_lyrics_clean_sample_df= song_lyrics_clean_sample_df.groupby('year').apply(l
 song_lyrics_clean_sample_df = song_lyrics_clean_sample_df.reset_index(drop=True)
 
 # Load model and tokenizer once
-print("Load BERT model...")
-tokenizer, model, labels = roberta.load_trbs_model(device = device)
+print("Load TRBS model...")
+tokenizer, model, labels = trbs.load_model(device = device)
 
 print("Apply senitment over chunks...")
-song_lyrics_clean_sample_df['sentiment'] = song_lyrics_clean_sample_df.apply(lambda row: roberta.sentiment_over_chunks(lyrics = row['lyrics'],tokenizer=tokenizer,labels = labels, model = model, device= device), axis=1)
+song_lyrics_clean_sample_df['sentiment'] = song_lyrics_clean_sample_df.apply(lambda row: trbs.sentiment_over_chunks(lyrics = row['lyrics'],tokenizer=tokenizer,labels = labels, model = model, device= device), axis=1)
 
 print("Extract sentiment labels into new columns...")
 song_lyrics_clean_sample_df['sentiment_label'] = song_lyrics_clean_sample_df['sentiment'].apply(lambda x: x['label'])
