@@ -4,7 +4,7 @@ import torch
 import numpy as np
 
 
-def load_trbs_model(device):
+def load_model(device):
 
     MODEL = "cardiffnlp/twitter-roberta-base-sentiment"
     tokenizer = AutoTokenizer.from_pretrained(MODEL)
