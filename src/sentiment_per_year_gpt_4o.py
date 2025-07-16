@@ -30,7 +30,7 @@ for chunk in pd.read_csv(file_path, chunksize=chunk_size):
 # Concatenate all chunks into a single DataFrame if needed
 print("Concact chunks into data frame...")
 song_lyrics_clean_df = pd.concat(chunks, ignore_index=True)
-#song_lyrics_clean_df = song_lyrics_clean_df.head(100) #for tetsing.
+#song_lyrics_clean_df = song_lyrics_clean_df.head(10) #for tetsing.
 
 print("Generate sample...")
 
@@ -54,5 +54,6 @@ song_lyrics_clean_sample_df['gpt_4o_score'] = song_lyrics_clean_sample_df['lyric
 song_lyrics_clean_sample_df['gpt_4o_score'] = pd.to_numeric(song_lyrics_clean_sample_df['gpt_4o_score'], errors='coerce')
 
 # Group by year
-yearly_sentiment = song_lyrics_clean_sample_df.groupby('year')['gpt_4o_score'].mean().plot(title="Average Sentiment Over Time")
+yearly_sentiment = song_lyrics_clean_sample_df.groupby('year')['gpt_4o_score'].mean().plot(title="Average sentiment decreases over time [gpt-40-mini]",
+                                                                                           ylabel="Sentiment")
 
