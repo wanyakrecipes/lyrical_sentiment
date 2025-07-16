@@ -1,4 +1,4 @@
-# Models and Lyrics
+# Music lyrics
 
 This repo contains work on researching the effectiveness of text classification methods for the sentiment analysis of
 music lyrics.
