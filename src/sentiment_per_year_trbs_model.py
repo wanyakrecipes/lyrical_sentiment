@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import trbs_model as trbs
+import bert_model_sentiment as bms
 
 #Added to ensure that it uses the apple M1 cores.
 #https://github.com/jeffheaton/app_deep_learning/blob/main/install/pytorch-install-aug-2023.ipynb
@@ -44,12 +44,15 @@ song_lyrics_clean_sample_df= song_lyrics_clean_sample_df.groupby('year').apply(l
 song_lyrics_clean_sample_df = song_lyrics_clean_sample_df.reset_index(drop=True)
 
 # Load model and tokenizer once
-print("Load TRBS model...")
-tokenizer, model, labels = trbs.load_model(device = device)
+print("Load BERT-TRBS model...")
+tokenizer, model, labels = bms.load_model(device = device,
+                                          model_name = "cardiffnlp/twitter-roberta-base-sentiment")
 
+#Apply sentiment over chunks
 print("Apply senitment over chunks...")
-song_lyrics_clean_sample_df['sentiment'] = song_lyrics_clean_sample_df.apply(lambda row: trbs.sentiment_over_chunks(lyrics = row['lyrics'],tokenizer=tokenizer,labels = labels, model = model, device= device), axis=1)
+song_lyrics_clean_sample_df['sentiment'] = song_lyrics_clean_sample_df.apply(lambda row: bms.sentiment_over_chunks(lyrics = row['lyrics'],tokenizer=tokenizer,labels = labels, model = model, device= device), axis=1)
 
+#Extract sentiment into different columns
 print("Extract sentiment labels into new columns...")
 song_lyrics_clean_sample_df['sentiment_label'] = song_lyrics_clean_sample_df['sentiment'].apply(lambda x: x['label'])
 song_lyrics_clean_sample_df['sentiment_positive'] = song_lyrics_clean_sample_df['sentiment'].apply(lambda x: x['scores']['positive'])
@@ -57,5 +60,6 @@ song_lyrics_clean_sample_df['sentiment_negative'] = song_lyrics_clean_sample_df[
 song_lyrics_clean_sample_df['sentiment_neutral'] = song_lyrics_clean_sample_df['sentiment'].apply(lambda x: x['scores']['neutral'])
 
 #generate graph of sentiment over time
-positive_sentiment_per_year_df = song_lyrics_clean_sample_df.groupby('year')['sentiment_positive'].mean().plot(title="Average Positive Sentiment Over Time")
+positive_sentiment_per_year_df = song_lyrics_clean_sample_df.groupby('year')['sentiment_positive'].mean().plot(title="Positive sentiment of songs decreases over time (bert-trbs)",
+                                                                                                               ylabel="Average positive sentiment")
 
