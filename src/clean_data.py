@@ -1,10 +1,11 @@
 #Import libraries and packages
 import pandas as pd
 import re
+import uuid
 
 #Read data using chunks
 
-print("Read data...")
+print("Read lyrics data...")
 
 file_path = '../data/raw/song_lyrics.csv'
 
@@ -42,12 +43,25 @@ def clean_lyrics(text):
     
     return text
 
-#TODO - have lyrics by section, then in totality.
-#Enable chorus sentiment v song sentiment over time.
+### Clean Lyrics ###
 
 #Undertake data cleaning
 print("Prepare data frame for data cleaning...")
 song_lyrics_clean_df = song_lyrics_full_df.copy()
+
+#Sample dataset
+# print("Sample tracks...")
+# song_lyrics_clean_df= song_lyrics_clean_df.sample(n=3000, random_state=42)
+
+# print(len(song_lyrics_clean_df))
+
+#Rename tag as genre
+print("update tag as genre")
+song_lyrics_clean_df = song_lyrics_clean_df.rename(columns = {"tag" : "genre"})
+
+#Add track id
+print("add track_id")
+song_lyrics_clean_df['track_id'] = [str(uuid.uuid4()) for _ in range(len(song_lyrics_clean_df))]
 
 #Filter data for english lyrics
 print("Filter for English lyrics...")
@@ -63,7 +77,7 @@ song_lyrics_clean_df = song_lyrics_clean_df[(song_lyrics_clean_df['year'] >= 188
 
 #Filter data for misc genre
 print("Remove songs under the misc genre")
-song_lyrics_clean_df = song_lyrics_clean_df[~(song_lyrics_clean_df['tag'] == 'misc')]
+song_lyrics_clean_df = song_lyrics_clean_df[~(song_lyrics_clean_df['genre'] == 'misc')]
 
 #Filter this population for songs with views more than 95 percentile
 print("Keep songs with in 95th percentile of views")
@@ -71,17 +85,67 @@ percentile_95 = song_lyrics_clean_df['views'].quantile(0.95)
 print(f"The 95th percentile of views is: {percentile_95}")
 song_lyrics_clean_df = song_lyrics_clean_df[(song_lyrics_clean_df['views'] >= percentile_95)]
 
-#Clean text
+#Clean text - there should really be a clean_lyrics column, not overwrite lyrics.
+print(len(song_lyrics_clean_df))
 print("clean song lyrics")
-song_lyrics_clean_df['lyrics'] = song_lyrics_clean_df['lyrics'].apply(clean_lyrics)
+song_lyrics_clean_df['clean_lyrics'] = song_lyrics_clean_df['lyrics'].apply(clean_lyrics)
 
 # Drop unecessary columns
 print("drop columns that are not required")
 song_lyrics_clean_df = song_lyrics_clean_df.drop(columns=['id','language_cld3','language_ft'])
 
-#Other considerations - the word remix etc.
+#Other considerations
+# the word remix etc. - albeit if it's a popular remix that may be okay.
+
+###Clean lyrics by part ###
+
+#Chunk data into different parts based on page breaks, and then extract the section name.
+#Only apply this to the songs with > 95 percentile, as this is what we're interested in
+
+label_pattern = r'^\[(.*?)\]' #Check if part label is between square brackets.
+
+def chunk_and_label(lyrics):
+    chunks = lyrics.split('\n\n')  # Step 1: chunk by double newlines
+    
+    sections = []
+    for chunk in chunks:
+        # Step 2: extract section label if exists e.g [Verse 1]
+        match = re.match(label_pattern, chunk)
+        if match:
+            part = match.group(1).strip()
+            # Remove label from chunk text to keep only lyrics
+            text = re.sub(label_pattern, '', chunk, count=1).strip()
+        else:
+            part = 'unknown'
+            text = chunk.strip()
+        
+        sections.append({'part': part, 'lyrics': text})
+    
+    return sections
+
+print("Chunk and label song parts..")
+
+song_lyrics_clean_df['clean_lyrics_by_part'] = song_lyrics_clean_df['lyrics'].apply(chunk_and_label)
+
+def clean_sections(sections):
+    # sections is a list of dicts: [{'section': ..., 'text': ...}, ...]
+    for chunk in sections:
+        chunk['lyrics'] = clean_lyrics(chunk['lyrics'])
+    return sections
+
+print("Clean song lyrics by part")
+song_lyrics_clean_df['clean_lyrics_by_part'] = song_lyrics_clean_df['clean_lyrics_by_part'].apply(clean_sections)
+
+# Display the result
+for sec in song_lyrics_clean_df['clean_lyrics_by_part'].iloc[31]:
+    print(f"Part: {sec['part']}")
+    print(f"Lyrics:\n{sec['lyrics']}")
+    print('---')
+
+#Column ordering
+song_lyrics_clean_df = song_lyrics_clean_df[['track_id','artist','features','title','year','genre','views','language','lyrics','clean_lyrics','clean_lyrics_by_part']]
+
+print(len(song_lyrics_clean_df))
 
 # save to csv
 song_lyrics_clean_df.to_csv("../data/processed/song_lyrics_clean_df.csv")
-
-
