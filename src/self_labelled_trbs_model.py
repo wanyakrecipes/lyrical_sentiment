@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import trbs_model as trbs
+import bert_model_sentiment as trbs
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, ConfusionMatrixDisplay
 
 # Read and concaternate labelled data
