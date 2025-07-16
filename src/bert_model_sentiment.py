@@ -4,9 +4,9 @@ import torch
 import numpy as np
 
 
-def load_model(device):
+def load_model(device,model_name):
 
-    MODEL = "cardiffnlp/twitter-roberta-base-sentiment"
+    MODEL = model_name 
     tokenizer = AutoTokenizer.from_pretrained(MODEL)
     model = AutoModelForSequenceClassification.from_pretrained(MODEL).to(device)
     labels = ['negative', 'neutral', 'positive']
