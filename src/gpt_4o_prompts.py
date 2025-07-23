@@ -57,3 +57,43 @@ def get_lyrics_sentiment_score(lyrics, model="gpt-4o-mini", max_retries=3):
             time.sleep(2)
 
     return None
+
+def build_phrase_extraction_prompt(lyrics):
+    return f"""
+            You are a helpful music analyst.
+
+            From the following song lyrics, extract the top 3 most frequently repeated *phrases*.
+            A phrase is any sequence of words that appears on a new line.
+            Ignore case and punctuation. Return only the 3 most frequent phrases.
+
+            Respond in the following XML format:
+            <phrases>
+            <phrase>...</phrase>
+            <phrase>...</phrase>
+            <phrase>...</phrase>
+            </phrases>
+
+            Lyrics:
+            \"\"\"
+            {lyrics}
+            \"\"\"
+            """.strip()
+
+def get_common_phrases_from_lyrics(lyrics, model="gpt-4o-mini"):
+    """
+    Get chorus lyrics from GPT using an OpenAI model.
+    """
+
+    prompt = build_phrase_extraction_prompt(lyrics)
+
+    response = openai.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": "You analyze song lyrics."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.3
+    )
+
+    return response.choices[0].message.content.strip()
+
