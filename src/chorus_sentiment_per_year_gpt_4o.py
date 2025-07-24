@@ -42,21 +42,32 @@ song_lyrics_clean_sample_df = song_lyrics_clean_sample_df[(song_lyrics_clean_sam
 
 #Generate sample based on year
 #TODO need to put a limit on number of songs that can be represented by a single artist, in the set and in a given year.
-song_lyrics_clean_sample_df= song_lyrics_clean_sample_df.groupby('year').apply(lambda x: x.sample(n=100, random_state=42) if len(x) > 100 else x)
+#Limit to 30 samples per year given the time it will take to process.
+song_lyrics_clean_sample_df= song_lyrics_clean_sample_df.groupby('year').apply(lambda x: x.sample(n=30, random_state=42) if len(x) > 30 else x)
 song_lyrics_clean_sample_df = song_lyrics_clean_sample_df.reset_index(drop=True)
-song_lyrics_clean_sample_df = song_lyrics_clean_sample_df.sample(n=100)
+#song_lyrics_clean_sample_df = song_lyrics_clean_sample_df.sample(n=100)
 
 print("Number of samples: " + str(len(song_lyrics_clean_sample_df)))
 
 #Extract top three common phrases from lyrics
 #Use uncleaned lyrics, as that contains new lines etc.
 print("Extract top three common phrases using gpt-4o-mini...")
-song_lyrics_clean_sample_df['gpt_4o_common_phrases'] = song_lyrics_clean_sample_df['lyrics'].apply(gpt_4o.get_common_phrases_from_lyrics)
+song_lyrics_clean_sample_df['common_lyrics_gpt_4o'] = song_lyrics_clean_sample_df['lyrics'].apply(gpt_4o.get_common_phrases_from_lyrics)
 
-# # Make sure sentiment is numeric
-# song_lyrics_clean_sample_df['gpt_4o_score'] = pd.to_numeric(song_lyrics_clean_sample_df['gpt_4o_score'], errors='coerce')
+print("Extract sentiment from top three common phrases using gpt-4o-mini...")
+song_lyrics_clean_sample_df['common_lyrics_sentiment_gpt_4o'] = song_lyrics_clean_sample_df['common_lyrics_gpt_4o'].apply(gpt_4o.get_phrase_sentiment_scores)
 
-# # Group by year
-# yearly_sentiment = song_lyrics_clean_sample_df.groupby('year')['gpt_4o_score'].mean().plot(title="Average sentiment decreases over time [gpt-40-mini]",
-#                                                                                            ylabel="Sentiment")
+print("Parse sentiment from xml......")
+song_lyrics_clean_sample_df['common_lyrics_sentiment_gpt_4o'] = song_lyrics_clean_sample_df['common_lyrics_sentiment_gpt_4o'].apply(gpt_4o.parse_phrase_sentiment_scores)
+
+print("Calculate average sentiment...")
+song_lyrics_clean_sample_df['common_lyrics_average_sentiment_gpt_4o'] = song_lyrics_clean_sample_df['common_lyrics_sentiment_gpt_4o'].apply(
+    lambda lst: round(sum(score for _, score in lst) / len(lst),3) if lst else None
+)
+
+#generate graph of sentiment over time
+print("Generate sentiment over time...")
+positive_sentiment_per_year_df = song_lyrics_clean_sample_df.groupby('year')['common_lyrics_average_sentiment_gpt_4o'].mean().plot(title="TBC (gtp-4o-mini)",
+                                                                                                                                   ylabel="positive sentiment")
+
 

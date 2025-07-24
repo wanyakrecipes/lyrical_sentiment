@@ -81,7 +81,7 @@ def build_phrase_extraction_prompt(lyrics):
 
 def get_common_phrases_from_lyrics(lyrics, model="gpt-4o-mini"):
     """
-    Get chorus lyrics from GPT using an OpenAI model.
+    Get common lyrics from GPT using an OpenAI model.
     """
 
     prompt = build_phrase_extraction_prompt(lyrics)
@@ -96,4 +96,54 @@ def get_common_phrases_from_lyrics(lyrics, model="gpt-4o-mini"):
     )
 
     return response.choices[0].message.content.strip()
+
+
+def build_sentiment_prompt_with_score(xml_phrases):
+    return f"""
+            You are an expert sentiment analyst.
+
+            Given a list of phrases from music lyrics in XML format, return a emotional sentiment score for each phrase.
+            Each score must be a number between -1 and 1, where:
+            -1 = very negative, 0 = emotionally neutral, 1 = very positive.
+
+            Respond in the following XML format:
+
+            <phrase_sentiments>
+            <phrase text="...">[sentiment_score]</phrase>
+            ...
+            </phrase_sentiments>
+
+            Here is the list of phrases:
+            {xml_phrases}
+            """.strip()
+
+
+
+def get_phrase_sentiment_scores(xml_phrases, model="gpt-4o"):
+
+    """
+    Get sentiment of common lyrics from GPT using an OpenAI model.
+    """
+    
+    prompt = build_sentiment_prompt_with_score(xml_phrases)
+
+    response = openai.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": "You analyze sentiment of music lyrics with numeric scores."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0
+    )
+
+    return response.choices[0].message.content.strip()
+
+
+def parse_phrase_sentiment_scores(xml_text):
+    try:
+        return [(phrase, float(score)) for phrase, score in re.findall(r'<phrase text="(.*?)">(.*?)</phrase>', xml_text)]
+    except:
+        return []
+
+
 
