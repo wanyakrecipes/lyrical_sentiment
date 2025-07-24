@@ -36,9 +36,6 @@ print("Generate sample...")
 #Generate sample of lyrics - only
 song_lyrics_clean_sample_df = song_lyrics_clean_df.copy()
 
-#Songs from 1950 onwards
-song_lyrics_clean_sample_df = song_lyrics_clean_sample_df[(song_lyrics_clean_sample_df['year'] >= 1950)]
-
 #Generate sample based on year
 song_lyrics_clean_sample_df= song_lyrics_clean_sample_df.groupby('year').apply(lambda x: x.sample(n=100, random_state=42) if len(x) > 100 else x)
 song_lyrics_clean_sample_df = song_lyrics_clean_sample_df.reset_index(drop=True)
@@ -48,9 +45,9 @@ print("Load BERT-TRBS model...")
 tokenizer, model, labels = bms.load_model(device = device,
                                           model_name = "cardiffnlp/twitter-roberta-base-sentiment")
 
-#Apply sentiment over chunks
+#Apply sentiment over chunks of "clean lyrics"
 print("Apply senitment over chunks...")
-song_lyrics_clean_sample_df['sentiment'] = song_lyrics_clean_sample_df.apply(lambda row: bms.sentiment_over_chunks(lyrics = row['lyrics'],tokenizer=tokenizer,labels = labels, model = model, device= device), axis=1)
+song_lyrics_clean_sample_df['sentiment'] = song_lyrics_clean_sample_df.apply(lambda row: bms.sentiment_over_chunks(lyrics = row['clean_lyrics'],tokenizer=tokenizer,labels = labels, model = model, device= device), axis=1)
 
 #Extract sentiment into different columns
 print("Extract sentiment labels into new columns...")
@@ -60,6 +57,6 @@ song_lyrics_clean_sample_df['sentiment_negative'] = song_lyrics_clean_sample_df[
 song_lyrics_clean_sample_df['sentiment_neutral'] = song_lyrics_clean_sample_df['sentiment'].apply(lambda x: x['scores']['neutral'])
 
 #generate graph of sentiment over time
-positive_sentiment_per_year_df = song_lyrics_clean_sample_df.groupby('year')['sentiment_positive'].mean().plot(title="Positive sentiment of songs decreases over time (bert-trbs)",
+positive_sentiment_per_year_df = song_lyrics_clean_sample_df.groupby('year')['sentiment_positive'].mean().plot(title="Positive sentiment of songs decreases over time (n=6832,bert-trbs)",
                                                                                                                ylabel="Average positive sentiment")
 
