@@ -71,9 +71,9 @@ song_lyrics_clean_df = song_lyrics_clean_df[(song_lyrics_clean_df['language'] ==
 print("Filter to remove artists containing the word 'Genius'")
 song_lyrics_clean_df  = song_lyrics_clean_df [~song_lyrics_clean_df ['artist'].str.contains('Genius', case=False, na=False)]
 
-#Filter for data between 1880 and 2022
+#Filter for data between 1950 and 2022
 print("Filter for songs released between 1880 and 2022")
-song_lyrics_clean_df = song_lyrics_clean_df[(song_lyrics_clean_df['year'] >= 1880) & (song_lyrics_clean_df['year'] <= 2022)]
+song_lyrics_clean_df = song_lyrics_clean_df[(song_lyrics_clean_df['year'] >= 1950) & (song_lyrics_clean_df['year'] <= 2022)]
 
 #Filter data for misc genre
 print("Remove songs under the misc genre")
@@ -98,54 +98,64 @@ song_lyrics_clean_df = song_lyrics_clean_df.drop(columns=['id','language_cld3','
 # the word remix etc. - albeit if it's a popular remix that may be okay.
 
 ###Clean lyrics by part ###
+# Issue - double new line sometimes works - but not all tracks have double new lines between sections
+# One way would be to search for songs where the word "Chorus" or "Refrain" is labbled
+# Then search for those only. Tha way, at least we have a clearly labellled sampled
+# Other ways would be to use an LLM to extract phrases that are repeated as a proxy for a chorus
+# Chunk data into different parts based on page breaks, and then extract the section name.
+# Only apply this to the songs with > 95 percentile, as this is what we're interested in
 
-#Chunk data into different parts based on page breaks, and then extract the section name.
-#Only apply this to the songs with > 95 percentile, as this is what we're interested in
+# #Songs from 1950 onwards
+# song_lyrics_clean_df = song_lyrics_clean_df[(song_lyrics_clean_df['year'] >= 1950)]
 
-label_pattern = r'^\[(.*?)\]' #Check if part label is between square brackets.
+# #Generate sample based on year
+# song_lyrics_clean_df = song_lyrics_clean_df.groupby('year').apply(lambda x: x.sample(n=100, random_state=42) if len(x) > 100 else x)
+# song_lyrics_clean_df = song_lyrics_clean_df.reset_index(drop=True)
 
-def chunk_and_label(lyrics):
-    chunks = lyrics.split('\n\n')  # Step 1: chunk by double newlines
+# label_pattern = r'^\[(.*?)\]' #Check if part label is between square brackets.
+
+# def chunk_and_label(lyrics):
+#     chunks = lyrics.split('\n\n')  # Step 1: chunk by double newlines
     
-    sections = []
-    for chunk in chunks:
-        # Step 2: extract section label if exists e.g [Verse 1]
-        match = re.match(label_pattern, chunk)
-        if match:
-            part = match.group(1).strip()
-            # Remove label from chunk text to keep only lyrics
-            text = re.sub(label_pattern, '', chunk, count=1).strip()
-        else:
-            part = 'unknown'
-            text = chunk.strip()
+#     sections = []
+#     for chunk in chunks:
+#         # Step 2: extract section label if exists e.g [Verse 1]
+#         match = re.match(label_pattern, chunk)
+#         if match:
+#             part = match.group(1).strip()
+#             # Remove label from chunk text to keep only lyrics
+#             text = re.sub(label_pattern, '', chunk, count=1).strip()
+#         else:
+#             part = 'unknown'
+#             text = chunk.strip()
         
-        sections.append({'part': part, 'lyrics': text})
+#         sections.append({'part': part, 'lyrics': text})
     
-    return sections
+#     return sections
 
-print("Chunk and label song parts..")
+# print("Chunk and label song parts..")
 
-song_lyrics_clean_df['clean_lyrics_by_part'] = song_lyrics_clean_df['lyrics'].apply(chunk_and_label)
+# song_lyrics_clean_df['clean_lyrics_by_part'] = song_lyrics_clean_df['lyrics'].apply(chunk_and_label)
 
-def clean_sections(sections):
-    # sections is a list of dicts: [{'section': ..., 'text': ...}, ...]
-    for chunk in sections:
-        chunk['lyrics'] = clean_lyrics(chunk['lyrics'])
-    return sections
+# def clean_sections(sections):
+#     # sections is a list of dicts: [{'section': ..., 'text': ...}, ...]
+#     for chunk in sections:
+#         chunk['lyrics'] = clean_lyrics(chunk['lyrics'])
+#     return sections
 
-print("Clean song lyrics by part")
-song_lyrics_clean_df['clean_lyrics_by_part'] = song_lyrics_clean_df['clean_lyrics_by_part'].apply(clean_sections)
+# print("Clean song lyrics by part")
+# song_lyrics_clean_df['clean_lyrics_by_part'] = song_lyrics_clean_df['clean_lyrics_by_part'].apply(clean_sections)
 
-# Display the result
-for sec in song_lyrics_clean_df['clean_lyrics_by_part'].iloc[31]:
-    print(f"Part: {sec['part']}")
-    print(f"Lyrics:\n{sec['lyrics']}")
-    print('---')
+# # Display the result
+# for sec in song_lyrics_clean_df['clean_lyrics_by_part'].iloc[31]:
+#     print(f"Part: {sec['part']}")
+#     print(f"Lyrics:\n{sec['lyrics']}")
+#     print('---')
 
-#Column ordering
-song_lyrics_clean_df = song_lyrics_clean_df[['track_id','artist','features','title','year','genre','views','language','lyrics','clean_lyrics','clean_lyrics_by_part']]
+# #Column ordering
+song_lyrics_clean_df = song_lyrics_clean_df[['track_id','artist','features','title','year','genre','views','language','lyrics','clean_lyrics']]
 
-print(len(song_lyrics_clean_df))
+# print(len(song_lyrics_clean_df))
 
 # save to csv
-song_lyrics_clean_df.to_csv("../data/processed/song_lyrics_clean_df.csv")
+song_lyrics_clean_df.to_csv("../data/processed/song_lyrics_clean_df.csv",index=False)
