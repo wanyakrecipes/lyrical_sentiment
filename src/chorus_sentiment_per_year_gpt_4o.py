@@ -67,7 +67,7 @@ song_lyrics_clean_sample_df['common_lyrics_average_sentiment_gpt_4o'] = song_lyr
 
 #generate graph of sentiment over time
 print("Generate sentiment over time...")
-positive_sentiment_per_year_df = song_lyrics_clean_sample_df.groupby('year')['common_lyrics_average_sentiment_gpt_4o'].mean().plot(title="TBC (gtp-4o-mini)",
-                                                                                                                                   ylabel="positive sentiment")
-
+positive_sentiment_per_year_df = song_lyrics_clean_sample_df.groupby('year')['common_lyrics_average_sentiment_gpt_4o'].mean().plot(title="Gradually decreasing sentiment in common lyrics (n=2161,gpt-4o-mini)",
+                                                                                                                                   ylabel="sentiment")
+#should apply a BERT model as well
 
