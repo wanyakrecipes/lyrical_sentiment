@@ -1,11 +1,13 @@
 # Music lyrics
 
-This repo contains work on researching the effectiveness of text classification methods for the sentiment analysis of
-music lyrics.
+This repo contains work on researching the effectiveness of text classification methods for the sentiment analysis of music lyrics.
 
 The project will be using the [Genius Song Lyric](https://www.kaggle.com/datasets/carlosgdcj/genius-song-lyrics-with-language-information/data?select=song_lyrics.csv) dataset from Kaggle.
 
-# Main analysis
+For information on work so far, please see [reports/summary.md](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/reports/summary.md)
+
+
+# Ideas
 * Generate emotion classification using bhadresh-savani/bert-base-uncased-emotion. Do so on chorus and all lyrics for comparison.
 * Sentiment analysis over time using all lyrics:
     * gpt-40-mini - need to fine tune prompt [DONE]
