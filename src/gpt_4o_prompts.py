@@ -3,6 +3,47 @@ import time
 import re
 
 
+def get_genre_from_lyrics(lyrics,model="gpt-4o-mini"):
+
+    genre_options = ['rock', 'rap', 'pop', 'r&b','country']
+    options_str = ", ".join(genre_options)
+
+    prompt = f"""
+                <role>
+                You are an expert music critic.
+                </role>
+
+                <task>
+                Based on these lyrics, classify the song into one of these genres:{options_str}
+                </task>
+
+                <instruction>
+                Respond with only the genre name.
+                </instruction>
+
+
+                <lyrics>
+                \"\"\"
+                {lyrics}
+                \"\"\"
+                </lyrics>
+                """
+
+    response = openai.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": "You aare a helpful assitant."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.1
+    )
+
+    return response.choices[0].message.content.strip()
+
+
+
+
+
 def get_lyrics_sentiment_score(lyrics, model="gpt-4o-mini", max_retries=3):
     """
     Get sentiment score between -1 and 1 from GPT using the latest OpenAI SDK.
