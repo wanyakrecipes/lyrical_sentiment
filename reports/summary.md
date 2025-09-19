@@ -21,6 +21,6 @@
 
 
 ## AI Safety & Bias
-* Assessing how effective LLMs are classifying genre based on music lyrics. Exploring if there is bias in the way LLMs catergorise creative content. For further info:
+* Assessing how effective LLMs are classifying genre based on music lyrics. Exploring if there is bias in the way LLMs catergorise creative content. Claude sonnet 4 seems to perform better than gpt-4o. However, both struggle to classify pop and R&B. This may be because the genre labels in this dataset are too high level. For further info:
     * [src/eval_genre_bias.py](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/src/eval_genre_bias.py)
     * [reports/gpt_4o_genre_classification_confusion_matrix.png](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/reports/gpt_4o_genre_classification_confusion_matrix.png)

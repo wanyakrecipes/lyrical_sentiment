@@ -32,10 +32,10 @@ def get_genre_from_lyrics(lyrics,model="gpt-4o-mini"):
     response = openai.chat.completions.create(
         model=model,
         messages=[
-            {"role": "system", "content": "You aare a helpful assitant."},
+            {"role": "system", "content": "You are a helpful assitant."},
             {"role": "user", "content": prompt}
         ],
-        temperature=0.1
+        temperature=0.0
     )
 
     return response.choices[0].message.content.strip()
