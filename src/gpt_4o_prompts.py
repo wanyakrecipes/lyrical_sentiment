@@ -43,7 +43,6 @@ def get_genre_from_lyrics(lyrics,model="gpt-4o-mini"):
 
 
 
-
 def get_lyrics_sentiment_score(lyrics, model="gpt-4o-mini", max_retries=3):
     """
     Get sentiment score between -1 and 1 from GPT using the latest OpenAI SDK.

@@ -1,20 +1,7 @@
 import pandas as pd
 import os
-from dotenv import load_dotenv
-import pandas as pd
 import matplotlib.pyplot as plt
 import gpt_4o_prompts as gpt_4o
-
-# Load the .env file
-load_dotenv()
-
-# Retrieve the API key
-api_key = os.getenv("OPENAI_API_KEY")
-
-if api_key:
-    print("API key loaded from .env file!")
-else:
-    print("Error: API key not found in .env file.")
 
 #Read clean dataset
 file_path = '../data/processed/song_lyrics_clean_df.csv'

@@ -7,20 +7,8 @@ import pandas as pd
 import numpy as np
 import gpt_4o_prompts as gpt_4o
 import os
-from dotenv import load_dotenv
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, ConfusionMatrixDisplay
 import anthropic
-
-# Load the .env file
-load_dotenv()
-
-# Retrieve the API key
-api_key = os.getenv("OPENAI_API_KEY")
-
-if api_key:
-    print("API key loaded from .env file!")
-else:
-    print("Error: API key not found in .env file.")
 
 
 #Read clean dataset
@@ -94,9 +82,6 @@ disp.ax_.set_title("Confusion Matrix for gpt-4o")
 ## Use a claude model here
 # https://github.com/anthropics/anthropic-cookbook/blob/main/skills/classification/guide.ipynb
 # https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/system-prompts#how-to-use-system-prompts
-
-
-load_dotenv()
 
 client = anthropic.Anthropic()
 

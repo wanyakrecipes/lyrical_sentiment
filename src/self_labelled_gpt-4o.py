@@ -1,7 +1,6 @@
 #Script to classify lyric sentiment using GPT 4.
 
 import os
-from dotenv import load_dotenv
 import pandas as pd
 import openai
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, ConfusionMatrixDisplay
@@ -11,19 +10,6 @@ import matplotlib.pyplot as plt
 song_lyrics_positive_labelled_df = pd.read_csv('../data/processed/song_lyrics_positive_labelled.csv')
 song_lyrics_negative_labelled_df = pd.read_csv('../data/processed/song_lyrics_negative_labelled.csv')
 song_lyrics_labelled_df = pd.concat([song_lyrics_positive_labelled_df,song_lyrics_negative_labelled_df])
-
-##### gpt-4o-mini performance #####
-
-# Load the .env file
-load_dotenv()
-
-# Retrieve the API key
-api_key = os.getenv("OPENAI_API_KEY")
-
-if api_key:
-    print("API key loaded from .env file!")
-else:
-    print("Error: API key not found in .env file.")
 
 
 # Function to classify text using ChatGPT
