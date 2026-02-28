@@ -1,8 +1,14 @@
 pytorch
 transformers==4.41.2
-ipykernal
+ipykernel
 pandas==2.2.2
+numpy
+matplotlib
+seaborn
 plotly==5.22.0
 nbformat==5.9.2
 scikit-learn==1.5.1
 openai==1.52.1
+anthropic
+sentence-transformers
+tqdm
