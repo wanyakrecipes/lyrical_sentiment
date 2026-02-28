@@ -44,7 +44,6 @@ python sentiment_per_year_trbs_model_chorus_only.py  # BERT chorus only
 
 # Evaluation scripts
 python eval_genre_bias.py                        # Genre classification accuracy
-python eval_radiohead_lyrics.py                  # LLM lyric knowledge
 python self_labelled_gpt-4o.py                   # GPT on labeled data
 python self_labelled_trbs_model.py               # BERT on labeled data
 ```
