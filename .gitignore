@@ -168,4 +168,7 @@ cython_debug/
 #Old scripts - for code no longer used
 /old
 
+#excel 
+*.xlsx
+
 
