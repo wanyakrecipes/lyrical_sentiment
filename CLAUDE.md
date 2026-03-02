@@ -46,6 +46,9 @@ python sentiment_per_year_trbs_model_chorus_only.py  # BERT chorus only
 python eval_genre_bias.py                        # Genre classification accuracy
 python self_labelled_gpt-4o.py                   # GPT on labeled data
 python self_labelled_trbs_model.py               # BERT on labeled data
+
+# AI control research
+python ai_control_fact_check.py                  # Multi-model fact-checking pipeline (Opus + Sonnet)
 ```
 
 ### Notebooks
@@ -79,6 +82,14 @@ Raw CSV → Clean (clean_data.py) → Sample by Year → Apply Model → Aggrega
 **3. Claude** (evaluation scripts)
 - Used for genre classification and bias research
 - Outperforms GPT-4o in multi-choice tasks
+
+**4. AI Control Pipeline** (`ai_control_fact_check.py`)
+- Proof-of-concept multi-model fact-checking for AI control research
+- Selects 30 songs from 1968-1972 (20 protest-keyword matches, 10 random popular)
+- Claude Opus (`claude-opus-4-6`) analyzes songs and extracts 3-5 historical claims
+- Claude Sonnet (`claude-sonnet-4-6`) independently verifies each claim
+- Verdicts: `verified`, `contradicted`, `uncertain` with `high/medium/low` confidence
+- Output: `data/processed/ai_control_fact_check_results.json`
 
 ### Key Data Structures
 
@@ -178,11 +189,12 @@ src/
 ├── sentiment_per_year_*.py        # Time series analyses
 ├── chorus_sentiment_*.py          # Phrase-level analyses
 ├── eval_*.py                      # Model evaluation scripts
-└── self_labelled_*.py             # Labeled data validation
+├── self_labelled_*.py             # Labeled data validation
+└── ai_control_fact_check.py       # Multi-model fact-checking pipeline (AI control research)
 
 data/
 ├── raw/                           # song_lyrics.csv (not in git)
-└── processed/                     # song_lyrics_clean_df.csv (not in git)
+└── processed/                     # song_lyrics_clean_df.csv, ai_control_fact_check_results.json (not in git)
 
 reports/
 ├── *.png                          # Generated visualizations
@@ -252,6 +264,11 @@ From `reports/summary.md`:
 **Common Phrases:**
 - Repeated lines also show decreasing sentiment over time
 - Negative themes becoming more prominent in choruses/hooks
+
+**AI Control — Multi-Model Fact Checking (PoC):**
+- 30 songs from 1968–1972 (20 protest-keyword, 10 random popular), 5 claims each = 150 total claims
+- Claude Opus extracted historical claims; Claude Sonnet verified them independently
+- Human Review of outputs taking place - analysis TBC.
 
 ## Dependencies Note
 

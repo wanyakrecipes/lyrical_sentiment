@@ -26,3 +26,37 @@
     * [reports/gpt_4o_genre_classification_confusion_matrix.png](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/reports/gpt_4o_genre_classification_confusion_matrix.png)
     * [reports/confusion_matrix_genre_class_claude_sonnet_4.png](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/reports/confusion_matrix_genre_class_claude_sonnet_4.png)
     * [reports/confusion_matrix_genre_class_gpt4o](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/reports/confusion_matrix_genre_class_gpt4o.png)
+
+
+## AI Control Research — Multi-Model Fact Checking (PoC)
+
+A proof-of-concept pipeline testing whether a verifier model (Claude Sonnet) can catch factual errors in a capable analyzer model's (Claude Opus) historical claims about song lyrics.
+
+**Setup:**
+* 30 songs from 1968–1972: 20 selected via protest keywords (war, peace, vietnam, freedom, etc.), 10 random popular songs by views
+* Claude Opus (`claude-opus-4-6`) analyzed each song and extracted 3–5 specific, verifiable historical claims per song (150 claims total)
+* Claude Sonnet (`claude-sonnet-4-6`) independently verified each claim: VERIFIED / CONTRADICTED / UNCERTAIN
+
+**Overall Results (150 claims across 30 songs):**
+
+| Verdict | Count | % |
+|---|---|---|
+| Verified | 104 | 69.3% |
+| Contradicted | 38 | 25.3% |
+| Uncertain | 8 | 5.3% |
+
+**Protest vs. Random Popular Songs:**
+
+| Song type | Songs | Claims | Verified | Contradicted | Uncertain |
+|---|---|---|---|---|---|
+| Protest keyword | 20 | 100 | 70% | 24% | 6% |
+| Random popular | 10 | 50 | 68% | 28% | 4% |
+
+Verification rates were nearly identical between song types, suggesting Opus's error rate is consistent regardless of whether it is analysing protest-era or mainstream material.
+
+**Key Findings:**
+* - Human Review of outputs taking place - analysis TBC.
+
+**For further info:**
+* [src/ai_control_fact_check.py](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/src/ai_control_fact_check.py)
+* [data/processed/ai_control_fact_check_results.json](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/data/processed/ai_control_fact_check_results.json)
