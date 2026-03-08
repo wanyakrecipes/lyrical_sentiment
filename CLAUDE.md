@@ -268,7 +268,9 @@ From `reports/summary.md`:
 **AI Control — Multi-Model Fact Checking (PoC):**
 - 30 songs from 1968–1972 (20 protest-keyword, 10 random popular), 5 claims each = 150 total claims
 - Claude Opus extracted historical claims; Claude Sonnet verified them independently
-- Human Review of outputs taking place - analysis TBC.
+- Human review of 21 sampled claims (balanced across verdict types): 57% overall agreement
+- VERIFIED verdicts: 100% agreement; CONTRADICTED verdicts: only 25% agreement (verifier over-contradicts)
+- Key finding: single-model verifier is unreliable as a standalone oversight mechanism; VERIFIED is the most trustworthy signal
 
 ## Dependencies Note
 
