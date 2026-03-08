@@ -43,7 +43,8 @@ python chorus_sentiment_per_year_gpt_4o.py       # GPT-4o phrase extraction
 python sentiment_per_year_trbs_model_chorus_only.py  # BERT chorus only
 
 # Evaluation scripts
-python eval_genre_bias.py                        # Genre classification accuracy
+python eval_genre_bias.py                        # Genre classification accuracy (original, GPT + Claude)
+python eval_genre_classification.py              # Multi-model Claude genre classification (configurable)
 python self_labelled_gpt-4o.py                   # GPT on labeled data
 python self_labelled_trbs_model.py               # BERT on labeled data
 
@@ -188,7 +189,8 @@ src/
 ├── get_api_keys.py                # Example of loading API keys from environment
 ├── sentiment_per_year_*.py        # Time series analyses
 ├── chorus_sentiment_*.py          # Phrase-level analyses
-├── eval_*.py                      # Model evaluation scripts
+├── eval_genre_bias.py             # Original genre classification (GPT + Claude Sonnet 4)
+├── eval_genre_classification.py  # Multi-model Claude genre classification (configurable, saves JSON + PNGs)
 ├── self_labelled_*.py             # Labeled data validation
 └── ai_control_fact_check.py       # Multi-model fact-checking pipeline (AI control research)
 
@@ -259,7 +261,12 @@ From `reports/summary.md`:
 **Genre Classification:**
 - GPT-4o accuracy: ~70% across 5 genres
 - Claude Sonnet 4 outperforms GPT-4o
-- Pop and R&B frequently confused (dataset labels may be too high-level)
+- Multi-model evaluation (50 songs/genre, 250 total): Haiku 4.5 → 65.6%, Sonnet 4.6 → 69.9%, Opus 4.6 → 73.6%
+- Accuracy scales with model tier (~4pp per step)
+- Rap is the easiest genre (recall 90–94% across all models); pop is the hardest
+- R&B consistently confused with rap across all model tiers (~10–12 misclassifications per 50 songs)
+- Country recall jumps from 44% (Haiku) to ~76–80% (Sonnet/Opus)
+- Pop/R&B confusion persists across all models — likely a dataset labelling issue, not a model capability issue
 
 **Common Phrases:**
 - Repeated lines also show decreasing sentiment over time

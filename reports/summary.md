@@ -21,11 +21,47 @@
 
 
 ## AI Safety & Bias
-* Exploring how effective LLMs are classifying genre based on music lyrics. Exploring if there is bias in the way LLMs catergorise creative content. Claude sonnet 4 seems to perform better than gpt-4o. However, both struggle to classify pop and R&B. This may be because the genre labels in this dataset are too high level. For further info:
+
+### Initial Genre Classification (eval_genre_bias.py)
+* Explored how effectively LLMs classify genre based on music lyrics. Claude Sonnet 4 performed better than GPT-4o. Both struggled to classify pop and R&B — likely because the genre labels in this dataset are too high-level. For further info:
     * [src/eval_genre_bias.py](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/src/eval_genre_bias.py)
     * [reports/gpt_4o_genre_classification_confusion_matrix.png](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/reports/gpt_4o_genre_classification_confusion_matrix.png)
     * [reports/confusion_matrix_genre_class_claude_sonnet_4.png](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/reports/confusion_matrix_genre_class_claude_sonnet_4.png)
-    * [reports/confusion_matrix_genre_class_gpt4o](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/reports/confusion_matrix_genre_class_gpt4o.png)
+
+### Multi-Model Genre Classification (eval_genre_classification.py)
+* Ran a systematic comparison of three Claude model tiers on genre classification: 50 songs per genre (250 total), equal samples across country, pop, r&b, rap, rock.
+
+**Accuracy by model:**
+
+| Model | Accuracy |
+|---|---|
+| Claude Haiku 4.5 | 65.6% |
+| Claude Sonnet 4.6 | 69.9% |
+| Claude Opus 4.6 | 73.6% |
+
+Accuracy scales clearly with model tier — each step up adds ~4 percentage points.
+
+**Per-genre F1 scores:**
+
+| Genre | Haiku 4.5 | Sonnet 4.6 | Opus 4.6 |
+|---|---|---|---|
+| country | 0.61 | 0.83 | 0.84 |
+| pop | 0.52 | 0.52 | 0.60 |
+| r&b | 0.67 | 0.61 | 0.66 |
+| rap | 0.80 | 0.82 | 0.84 |
+| rock | 0.66 | 0.68 | 0.73 |
+
+**Key findings:**
+* **Rap is the most classifiable genre** across all models (recall 90–94%). Its lyrical style is likely the most distinctive.
+* **Pop is the hardest genre** — consistently the lowest F1 across all models, mainly confused with rock and r&b. Dataset genre labels for pop may be too broad.
+* **R&B is consistently confused with rap** — 12 of 50 r&b songs misclassified as rap by Haiku and Sonnet, 9 by Opus. Suggests meaningful lyrical overlap between these genres.
+* **Country recall improves dramatically from Haiku (44%) to Sonnet/Opus (~76–80%)**, despite Haiku having near-perfect country precision (1.0). Haiku only predicts country when very confident, missing many true positives.
+* The pop/R&B confusion observed in the initial evaluation persists across all model tiers, suggesting it is a property of the dataset labels rather than model capability.
+* For further info:
+    * [src/eval_genre_classification.py](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/src/eval_genre_classification.py)
+    * [reports/confusion_matrix_claude-haiku-4-5-20251001_20260308_183628.png](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/reports/confusion_matrix_claude-haiku-4-5-20251001_20260308_183628.png)
+    * [reports/confusion_matrix_claude-sonnet-4-6_20260308_183628.png](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/reports/confusion_matrix_claude-sonnet-4-6_20260308_183628.png)
+    * [reports/confusion_matrix_claude-opus-4-6_20260308_183628.png](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/reports/confusion_matrix_claude-opus-4-6_20260308_183628.png)
 
 
 ## AI Control Research — Multi-Model Fact Checking (PoC)
