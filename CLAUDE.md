@@ -272,6 +272,13 @@ From `reports/summary.md`:
 - Repeated lines also show decreasing sentiment over time
 - Negative themes becoming more prominent in choruses/hooks
 
+**Cultural Homogenisation Over Time:**
+- Tests whether popular lyrics have homogenised since 1950 (AI-safety framing: engagement-optimised convergence as a societal-resilience concern)
+- Primary config: 75th percentile by views, 5-year bins (n=14), rap excluded; Kendall's tau trend test
+- **Headline finding: thematic convergence** — within-bin pairwise distance declines over time on both TF-IDF (tau −0.71, p<0.001) and sentence embeddings (tau −0.69, p<0.001); the two independent methods agree, so it's not a vocabulary artefact
+- Secondary findings are weak/caveated: vocabulary narrowing (TTR) disappears under length control (MATTR null); only hook-level (fivegram) repetition rises significantly; the view-weighted "algorithmic amplification" effect did not robustly replicate
+- Full write-up: `reports/summary.md`
+
 **AI Control — Multi-Model Fact Checking (PoC):**
 - 30 songs from 1968–1972 (20 protest-keyword, 10 random popular), 5 claims each = 150 total claims
 - Claude Opus extracted historical claims; Claude Sonnet verified them independently

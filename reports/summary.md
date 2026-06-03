@@ -64,6 +64,66 @@ Accuracy scales clearly with model tier — each step up adds ~4 percentage poin
     * [reports/confusion_matrix_claude-opus-4-6_20260308_183628.png](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/reports/confusion_matrix_claude-opus-4-6_20260308_183628.png)
 
 
+## Cultural Homogenisation Over Time
+
+A study of whether popular music lyrics have homogenised since 1950, framed for an AI Safety audience: if popular music has measurably converged under the pre-AI engagement and recommendation regime, generative systems optimising the same engagement signal would by the same logic accelerate that convergence. Narrowing thematic diversity represents a reduction in the range of ideas and emotional registers people are exposed to — a societal-resilience concern.
+
+**Setup:**
+* Dataset: cleaned Genius lyrics, English only, 1950–2019
+* Two view-count filters tested: 95th percentile (~165k songs) and 75th percentile (~5× larger)
+* Two time-bin resolutions tested: decade and 5-year bins
+* Stratified sampling of 2,000 songs per bin with `random_state=42`
+* Rap excluded — its distinctive lyrical density would otherwise dominate the trend
+* Seven metrics:
+    * TTR (type-token ratio) and MATTR (window=50, length-normalised) — vocabulary richness
+    * Trigram, fourgram, fivegram repetition rates — phrase repetition
+    * Mean pairwise cosine distance on TF-IDF (5,000 features) within each bin — thematic diversity (vocabulary overlap)
+    * Mean pairwise cosine distance on sentence embeddings (all-MiniLM-L6-v2, 384-dim) within each bin — thematic diversity (semantic similarity; recognises shared themes expressed with different vocabulary)
+* Kendall's tau for monotonic trend testing
+* View-count-weighted re-run using log(views + 1) to test for popularity amplification
+
+The 75th-percentile / 5-year-bin combination (n = 14 bins) is the primary result — finer tau resolution and most bins above the 100-song low-confidence threshold.
+
+**Headline result (75th percentile, 5-year bins, unweighted):**
+
+| Metric | tau | p-value | Reading |
+|---|---|---|---|
+| Thematic diversity (TF-IDF) | −0.714 | **0.00014** | Strong, highly significant convergence |
+| Thematic diversity (embeddings) | −0.692 | **0.00026** | Independently corroborates the convergence finding |
+| TTR | −0.626 | 0.0012 | Apparent vocabulary narrowing (but see below) |
+| MATTR (length-normalised) | −0.165 | 0.45 | **Null** — no narrowing once length is controlled |
+| Fivegram repetition | +0.451 | 0.026 | Rising long-phrase repetition |
+| Fourgram repetition | +0.363 | 0.079 | Borderline |
+| Trigram repetition | +0.253 | 0.23 | Null |
+
+**Key findings:**
+
+* **Evideence for thematic convergence is replicated across two independent methods.** Pairwise cosine distance between songs within a time bin has declined monotonically since 1950 on *both* TF-IDF (vocabulary overlap; tau = −0.714, p = 0.00014) and sentence embeddings (semantic similarity; tau = −0.692, p = 0.00026). Because the embedding measure recognises shared themes even when expressed with different words, its agreement rules out the most obvious "it's just a vocabulary artefact" objection to the TF-IDF result. The trend is robust across both percentile filters: on the 95th-percentile dataset the embedding method is the single strongest signal in the entire study (tau = −0.868, p = 5.5×10⁻⁷), with TF-IDF close behind (tau = −0.692, p = 0.00026).
+* **The secondary findings are weaker and heavily caveated.** The "vocabulary is narrowing" story does not survive length control: TTR declines (p = 0.0012) but MATTR, which normalises for length with a rolling 50-token window, shows essentially no trend (p = 0.45), so the apparent narrowing was a lyric-length artefact — songs got longer, not less varied per word. Phrase repetition narrows to a single robust dimension: at 5-year resolution only fivegram (hook-length) repetition rises significantly, while trigram and fourgram trends fall out of significance. And the 'algorithmic amplification' effect did not robustly replicate — all `tau_delta` values between unweighted and view-weighted runs are within ±0.07 (below the test's noise floor at n = 91 pairs), so the earlier decade-level signal was likely an artefact of Kendall's tau's coarse discrete grid at n = 7.
+* **The 75th percentile dataset matters.** Expanding from the 95th to 75th percentile gave finer tau resolution, lifted older bins above the low-confidence threshold, and most importantly exposed the TTR/MATTR divergence that the curated 95th-percentile sample had masked.
+
+**Implications for AI Safety:**
+
+The single robust finding — thematic convergence — is the dimension that maps most directly onto the societal-resilience framing in [AISI's research agenda on frontier AI risks](https://www.aisi.gov.uk). Narrowing thematic diversity represents a reduction in the *range* of ideas and emotional registers people are exposed to via popular media, independent of whether individual songs are lexically richer or poorer. 
+
+<!-- TODO: look at the research on gradual disempowerment and add some colour here.
+
+Pre-AI recommendation, marketing, and engagement-optimisation infrastructure have already produced measurable convergence on this dimension. Generative systems optimising the same engagement signal at scale would, by the same logic, accelerate it — and theme is the easiest of the three measured dimensions for current generative models to influence at population scale.
+
+The vocabulary and amplification claims from earlier iterations should be either dropped or heavily caveated. The hook-level repetition finding can stay but should be narrowed in scope. -->
+
+**Limitations:**
+* n = 14 bins is sufficient for trend testing but not for fine-grained sub-trend analysis
+* Kendall's tau measures rank order, not magnitude — small `tau_delta` between runs does not mean per-bin numbers are identical
+* Pre-2000s view counts are a noisy popularity proxy regardless of percentile filter
+* This is correlational; "algorithmic amplification" here refers to engagement-optimisation logic broadly, not modern recommender systems specifically
+
+**For further info:**
+* [src/homogenisation_analysis.py](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/src/homogenisation_analysis.py)
+
+<!-- TODO - add the 75th and 95th percentile to the `reports/` -->
+
+
 ## AI Control Research — Multi-Model Fact Checking (PoC)
 
 A proof-of-concept pipeline testing whether a verifier model (Claude Sonnet) can catch factual errors in a capable analyzer model's (Claude Opus) historical claims about song lyrics.
