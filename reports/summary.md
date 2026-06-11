@@ -106,7 +106,7 @@ Bibliography:
 **For further info:**
 * [src/homogenisation_analysis.py](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/src/homogenisation_analysis.py)
 * [reports/thematic_diversity_by_decade_75th.png](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/reports/thematic_diversity_by_decade_75th.png)
-* * [reports/thematic_diversity_by_decade_95th.png](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/reports/thematic_diversity_by_decade_95th.png)
+* [reports/thematic_diversity_by_decade_95th.png](https://github.com/wanyakrecipes/lyrical_sentiment/blob/main/reports/thematic_diversity_by_decade_95th.png)
 
 
 ## AI Control Research — Multi-Model Fact Checking (PoC)
